@@ -71,9 +71,19 @@ fun LibraryScreen(
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                     Button(
-                        onClick = { /* TODO: Implement music scanning */ }
+                        onClick = { viewModel.scanForMusic() },
+                        enabled = !uiState.isScanning
                     ) {
-                        Text("Scan for Music")
+                        if (uiState.isScanning) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Scanning...")
+                        } else {
+                            Text("Scan for Music")
+                        }
                     }
                 }
             }
@@ -87,6 +97,21 @@ fun LibraryScreen(
                         )
                     }
                 }
+            }
+        }
+        
+        // Handle error and success messages
+        uiState.error?.let { error ->
+            LaunchedEffect(error) {
+                // TODO: Show snackbar with error
+                viewModel.clearError()
+            }
+        }
+        
+        uiState.scanMessage?.let { message ->
+            LaunchedEffect(message) {
+                // TODO: Show snackbar with success message
+                viewModel.clearScanMessage()
             }
         }
     }
