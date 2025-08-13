@@ -6,8 +6,13 @@ import com.offlinemusicplayer.data.database.MusicDatabase
 import com.offlinemusicplayer.data.database.SongDao
 import com.offlinemusicplayer.data.database.GenreDao
 import com.offlinemusicplayer.data.database.PlaylistDao
+import com.offlinemusicplayer.data.repository.SongRepositoryImpl
+import com.offlinemusicplayer.data.repository.GenreRepositoryImpl
+import com.offlinemusicplayer.domain.repository.SongRepository
+import com.offlinemusicplayer.domain.repository.GenreRepository
 import dagger.Module
 import dagger.Provides
+import dagger.Binds
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
@@ -41,4 +46,19 @@ object DatabaseModule {
     fun providePlaylistDao(database: MusicDatabase): PlaylistDao {
         return database.playlistDao()
     }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class RepositoryModule {
+
+    @Binds
+    abstract fun bindSongRepository(
+        songRepositoryImpl: SongRepositoryImpl
+    ): SongRepository
+
+    @Binds
+    abstract fun bindGenreRepository(
+        genreRepositoryImpl: GenreRepositoryImpl
+    ): GenreRepository
 }
