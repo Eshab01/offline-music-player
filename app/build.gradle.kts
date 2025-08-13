@@ -47,7 +47,7 @@ android {
     }
     
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = "1.3.2"
     }
     
     packaging {
@@ -64,7 +64,7 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.8.2")
     
     // Jetpack Compose
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    implementation(platform("androidx.compose:compose-bom:2022.10.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
@@ -83,9 +83,9 @@ dependencies {
     ksp("androidx.room:room-compiler:2.6.1")
     
     // Hilt for dependency injection
-    implementation("com.google.dagger:hilt-android:2.45")
+    implementation("com.google.dagger:hilt-android:2.44")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    ksp("com.google.dagger:hilt-compiler:2.45")
+    ksp("com.google.dagger:hilt-compiler:2.44")
     
     // ExoPlayer for audio playback
     implementation("androidx.media3:media3-exoplayer:1.2.1")
