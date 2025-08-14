@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LibraryMusic
@@ -55,7 +57,18 @@ class MainActivity : ComponentActivity() {
                 val perm = audioPermission()
                 val permissionState = rememberPermissionState(perm)
                 LaunchedEffect(Unit) {
-                    if (!permissionState.status.isGranted) permissionState.launchPermissionRequest()
+                    if (!permissionState.status.isGranted) {
+                        permissionState.launchPermissionRequest()
+                    }
+                }
+                
+                // Trigger scan when permission is granted
+                LaunchedEffect(permissionState.status.isGranted) {
+                    if (permissionState.status.isGranted) {
+                        // Trigger initial scan when permission is granted
+                        val libraryVm: com.eshab.offlineplayer.ui.viewmodel.LibraryViewModel = hiltViewModel()
+                        libraryVm.triggerScan()
+                    }
                 }
 
                 Scaffold(
@@ -93,23 +106,25 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { padding ->
-                    Box(Modifier.padding(padding)) {
-                        NavHost(navController, startDestination = "home") {
-                            composable("home") { HomeScreen() }
-                            composable("library") {
-                                LibraryScreen(
-                                    onPlay = { uris, index ->
-                                        ensurePlaybackService(this@MainActivity)
-                                        playerVm.setQueueAndPlay(uris, index)
-                                    }
-                                )
+                    Column(Modifier.padding(padding)) {
+                        Box(Modifier.weight(1f)) {
+                            NavHost(navController, startDestination = "home") {
+                                composable("home") { HomeScreen() }
+                                composable("library") {
+                                    LibraryScreen(
+                                        onPlay = { uris, index ->
+                                            ensurePlaybackService(this@MainActivity)
+                                            playerVm.setQueueAndPlay(uris, index)
+                                        }
+                                    )
+                                }
+                                composable("search") { SearchScreen() }
+                                composable("now") { NowPlayingScreen() }
+                                composable("settings") { SettingsScreen() }
                             }
-                            composable("search") { SearchScreen() }
-                            composable("now") { NowPlayingScreen() }
-                            composable("settings") { SettingsScreen() }
                         }
-
-                        // Persistent Mini-player
+                        
+                        // Persistent Mini-player at bottom
                         MiniPlayer(vm = playerVm) {
                             navController.navigate("now")
                         }

@@ -25,7 +25,7 @@ class PlayerViewModel @Inject constructor(
 
     fun setQueueAndPlay(uris: List<String>, startIndex: Int) {
         playerManager.setQueue(uris, startIndex)
-        _isPlaying.value = true
+        _isPlaying.value = playerManager.isPlaying
         // Titles would normally come from metadata; set lightweight placeholders here
         _title.value = "Playing"
         _subtitle.value = "Offline"
@@ -33,7 +33,7 @@ class PlayerViewModel @Inject constructor(
 
     fun playPause() {
         playerManager.playPause()
-        _isPlaying.value = !_isPlaying.value
+        _isPlaying.value = playerManager.isPlaying
     }
 
     fun next() = playerManager.next()
