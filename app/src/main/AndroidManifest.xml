@@ -36,6 +36,13 @@
             </intent-filter>
         </activity>
 
+        <!-- About Activity -->
+        <activity
+            android:name=".ui.about.AboutActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:theme="@style/Theme.OfflineMusicPlayer" />
+
         <!-- Music Player Service -->
         <service
             android:name=".service.MusicPlayerService"
