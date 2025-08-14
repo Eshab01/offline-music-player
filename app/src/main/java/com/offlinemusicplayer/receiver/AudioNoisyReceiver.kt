@@ -13,23 +13,24 @@ class AudioNoisyReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
-            // Headphones were unplugged or bluetooth disconnected
             pausePlayback(context)
         }
     }
 
     private fun pausePlayback(context: Context) {
         val sessionToken = SessionToken(context, android.content.ComponentName(context, MusicPlayerService::class.java))
-        val controllerFuture: ListenableFuture<MediaController> = MediaController.Builder(context, sessionToken).buildAsync()
-        
+        val controllerFuture: ListenableFuture<MediaController> =
+            MediaController.Builder(context, sessionToken).buildAsync()
+
         controllerFuture.addListener({
+            var controller: MediaController? = null
             try {
-                val controller = controllerFuture.get()
-                if (controller.isPlaying) {
-                    controller.pause()
-                }
-            } catch (e: Exception) {
-                // Ignore if service is not available
+                controller = controllerFuture.get()
+                if (controller.isPlaying) controller.pause()
+            } catch (_: Exception) {
+                // Service not available; ignore
+            } finally {
+                controller?.release()
             }
         }, context.mainExecutor)
     }

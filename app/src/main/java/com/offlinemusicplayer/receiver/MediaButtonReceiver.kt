@@ -24,19 +24,23 @@ class MediaButtonReceiver : BroadcastReceiver() {
 
     private fun handleMediaButton(context: Context, keyCode: Int) {
         val sessionToken = SessionToken(context, android.content.ComponentName(context, MusicPlayerService::class.java))
-        val controllerFuture: ListenableFuture<MediaController> = MediaController.Builder(context, sessionToken).buildAsync()
-        
+        val controllerFuture: ListenableFuture<MediaController> =
+            MediaController.Builder(context, sessionToken).buildAsync()
+
         controllerFuture.addListener({
-            val controller = controllerFuture.get()
-            when (keyCode) {
-                KeyEvent.KEYCODE_MEDIA_PLAY -> controller.play()
-                KeyEvent.KEYCODE_MEDIA_PAUSE -> controller.pause()
-                KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
-                    if (controller.isPlaying) controller.pause() else controller.play()
+            var controller: MediaController? = null
+            try {
+                controller = controllerFuture.get()
+                when (keyCode) {
+                    KeyEvent.KEYCODE_MEDIA_PLAY -> controller.play()
+                    KeyEvent.KEYCODE_MEDIA_PAUSE -> controller.pause()
+                    KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> if (controller.isPlaying) controller.pause() else controller.play()
+                    KeyEvent.KEYCODE_MEDIA_NEXT -> controller.seekToNext()
+                    KeyEvent.KEYCODE_MEDIA_PREVIOUS -> controller.seekToPrevious()
+                    KeyEvent.KEYCODE_MEDIA_STOP -> controller.stop()
                 }
-                KeyEvent.KEYCODE_MEDIA_NEXT -> controller.seekToNext()
-                KeyEvent.KEYCODE_MEDIA_PREVIOUS -> controller.seekToPrevious()
-                KeyEvent.KEYCODE_MEDIA_STOP -> controller.stop()
+            } finally {
+                controller?.release()
             }
         }, context.mainExecutor)
     }

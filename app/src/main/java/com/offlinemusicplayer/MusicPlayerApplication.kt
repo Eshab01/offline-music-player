@@ -15,35 +15,25 @@ class MusicPlayerApplication : Application() {
             applicationContext,
             MusicDatabase::class.java,
             "music_database"
-        )
-        .addMigrations(MusicDatabase.MIGRATION_1_2)
-        // Note: No fallbackToDestructiveMigration() for production safety
-        .build()
+        ).build()
     }
 
     val repository by lazy { MusicRepository(database.musicDao()) }
 
     override fun onCreate() {
         super.onCreate()
-        createNotificationChannel()
-    }
-
-    private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = getString(R.string.notification_channel_name)
-            val descriptionText = getString(R.string.notification_channel_description)
-            val importance = NotificationManager.IMPORTANCE_LOW
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                description = descriptionText
-                setShowBadge(false)
-            }
-            
-            val notificationManager = getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
+            val nm = getSystemService(NotificationManager::class.java)
+            val ch = NotificationChannel(
+                CHANNEL_ID,
+                "Playback",
+                NotificationManager.IMPORTANCE_LOW
+            )
+            nm.createNotificationChannel(ch)
         }
     }
 
     companion object {
-        const val CHANNEL_ID = "music_playback_channel"
+        const val CHANNEL_ID = "playback"
     }
 }

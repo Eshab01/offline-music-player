@@ -13,6 +13,12 @@ import com.offlinemusicplayer.R
 
 object MediaNotificationHelper {
 
+    const val ACTION_PLAY = "action_play"
+    const val ACTION_PAUSE = "action_pause"
+    const val ACTION_PREVIOUS = "action_prev"
+    const val ACTION_NEXT = "action_next"
+    const val ACTION_STOP = "action_stop"
+
     fun createNotification(
         context: Context,
         mediaSession: MediaSession,
@@ -20,17 +26,15 @@ object MediaNotificationHelper {
     ): Notification {
         val builder = NotificationCompat.Builder(context, MusicPlayerApplication.CHANNEL_ID)
 
-        // Add media style
         val mediaStyle = MediaStyleNotificationHelper.MediaStyle(mediaSession)
             .setShowActionsInCompactView(0, 1, 2)
-            .setShowCancelButton(true)
 
         val metadata = player.mediaMetadata
         builder.apply {
             setContentTitle(metadata.title ?: context.getString(R.string.app_name))
             setContentText(metadata.artist)
             setSubText(metadata.albumTitle)
-            setLargeIcon(null) // TODO: Add album art loading
+            setLargeIcon(null)
             setContentIntent(mediaSession.sessionActivity)
             setDeleteIntent(createStopIntent(context))
             setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -41,7 +45,6 @@ object MediaNotificationHelper {
             priority = NotificationCompat.PRIORITY_LOW
         }
 
-        // Add action buttons
         builder.addAction(createPreviousAction(context))
         builder.addAction(createPlayPauseAction(context, player.isPlaying))
         builder.addAction(createNextAction(context))
@@ -63,9 +66,7 @@ object MediaNotificationHelper {
     }
 
     private fun createPreviousAction(context: Context): NotificationCompat.Action {
-        val intent = Intent(context, MusicPlayerService::class.java).apply {
-            action = ACTION_PREVIOUS
-        }
+        val intent = Intent(context, MusicPlayerService::class.java).apply { action = ACTION_PREVIOUS }
         val pendingIntent = PendingIntent.getService(
             context, 1, intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -78,9 +79,7 @@ object MediaNotificationHelper {
     }
 
     private fun createNextAction(context: Context): NotificationCompat.Action {
-        val intent = Intent(context, MusicPlayerService::class.java).apply {
-            action = ACTION_NEXT
-        }
+        val intent = Intent(context, MusicPlayerService::class.java).apply { action = ACTION_NEXT }
         val pendingIntent = PendingIntent.getService(
             context, 2, intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -93,18 +92,10 @@ object MediaNotificationHelper {
     }
 
     private fun createStopIntent(context: Context): PendingIntent {
-        val intent = Intent(context, MusicPlayerService::class.java).apply {
-            action = ACTION_STOP
-        }
+        val intent = Intent(context, MusicPlayerService::class.java).apply { action = ACTION_STOP }
         return PendingIntent.getService(
             context, 3, intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
     }
-
-    const val ACTION_PLAY = "ACTION_PLAY"
-    const val ACTION_PAUSE = "ACTION_PAUSE"
-    const val ACTION_PREVIOUS = "ACTION_PREVIOUS"
-    const val ACTION_NEXT = "ACTION_NEXT"
-    const val ACTION_STOP = "ACTION_STOP"
 }

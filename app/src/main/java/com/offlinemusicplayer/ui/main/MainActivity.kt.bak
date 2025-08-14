@@ -8,53 +8,51 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
-import androidx.media3.common.MediaItem
-import androidx.media3.session.MediaController
-import androidx.media3.session.SessionToken
 import com.offlinemusicplayer.MusicPlayerApplication
 import com.offlinemusicplayer.R
-import com.offlinemusicplayer.databinding.ActivityMainBinding
 import com.offlinemusicplayer.data.model.Track
-import com.offlinemusicplayer.scanner.MusicScanner
-import com.offlinemusicplayer.service.MusicPlayerService
+import com.offlinemusicplayer.databinding.ActivityMainBinding
 import com.offlinemusicplayer.ui.about.AboutActivity
 import com.offlinemusicplayer.ui.adapter.TracksAdapter
 import com.offlinemusicplayer.ui.viewmodel.MainViewModel
+import com.offlinemusicplayer.scanner.MusicScanner
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var viewModel: MainViewModel
     private lateinit var tracksAdapter: TracksAdapter
-
-    private var mediaController: MediaController? = null
+    
+    private val viewModel: MainViewModel by viewModels {
+        MainViewModel.Factory((application as MusicPlayerApplication).repository)
+    }
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        if (granted) {
+    ) { isGranted ->
+        if (isGranted) {
             checkNotificationPermission()
             loadMusicFiles()
         } else {
-            Snackbar.make(binding.root, getString(R.string.permission_denied), Snackbar.LENGTH_LONG).show()
+            showPermissionRationale()
         }
     }
 
     private val notificationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        if (!granted) {
+    ) { isGranted ->
+        if (!isGranted) {
             Snackbar.make(
                 binding.root,
-                "Notification permission denied. Media controls may not work.",
+                "Notification permission denied. Media controls in notifications may not work.",
                 Snackbar.LENGTH_LONG
             ).show()
         }
@@ -65,22 +63,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupViewModel()
+        setSupportActionBar(binding.toolbar)
+        
         setupRecyclerView()
         setupFab()
+        setupSearch()
         checkPermissions()
         observeViewModel()
-        initializeMediaController()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mediaController?.release()
-        mediaController = null
-    }
-
-    private fun setupViewModel() {
-        viewModel = MainViewModel((application as MusicPlayerApplication).repository)
     }
 
     private fun setupRecyclerView() {
@@ -88,6 +77,7 @@ class MainActivity : AppCompatActivity() {
             onTrackClick = ::onTrackClick,
             onMoreClick = ::onMoreClick
         )
+        
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = tracksAdapter
@@ -97,36 +87,35 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupFab() {
         binding.fabPlay.setOnClickListener {
-            mediaController?.let { controller ->
-                if (controller.isPlaying) {
-                    controller.pause()
-                } else {
-                    controller.play()
-                }
-            } ?: run {
-                Snackbar.make(binding.root, "Media service not ready", Snackbar.LENGTH_SHORT).show()
-            }
+            // TODO: Handle play/pause action
+            Snackbar.make(binding.root, "Play/Pause functionality coming soon", Snackbar.LENGTH_SHORT).show()
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
+        
         val searchItem = menu.findItem(R.id.action_search)
         val searchView = searchItem.actionView as SearchView
         
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean = false
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
             override fun onQueryTextChange(newText: String?): Boolean {
                 viewModel.updateSearchQuery(newText ?: "")
                 return true
             }
         })
+        
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_settings -> {
+                // TODO: Open settings
                 Snackbar.make(binding.root, "Settings coming soon", Snackbar.LENGTH_SHORT).show()
                 true
             }
@@ -136,6 +125,10 @@ class MainActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun setupSearch() {
+        // Search setup is now handled in onCreateOptionsMenu
     }
 
     private fun checkPermissions() {
@@ -204,43 +197,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initializeMediaController() {
-        val sessionToken = SessionToken(this, android.content.ComponentName(this, MusicPlayerService::class.java))
-        val controllerFuture = MediaController.Builder(this, sessionToken).buildAsync()
-        controllerFuture.addListener({
-            try {
-                mediaController = controllerFuture.get()
-            } catch (e: Exception) {
-                // Service not available
-            }
-        }, mainExecutor)
-    }
-
     private fun onTrackClick(track: Track) {
-        mediaController?.let { controller ->
-            // Create MediaItem from Track and start playback
-            val mediaItem = MediaItem.Builder()
-                .setUri(track.uri)
-                .setMediaMetadata(
-                    androidx.media3.common.MediaMetadata.Builder()
-                        .setTitle(track.title)
-                        .setArtist(track.artist)
-                        .setAlbumTitle(track.album)
-                        .build()
-                )
-                .build()
-            
-            controller.setMediaItem(mediaItem)
-            controller.prepare()
-            controller.play()
-            
-            Snackbar.make(binding.root, "Playing: ${track.title}", Snackbar.LENGTH_SHORT).show()
-        } ?: run {
-            Snackbar.make(binding.root, "Media service not ready", Snackbar.LENGTH_SHORT).show()
-        }
+        // TODO: Start playback
+        Snackbar.make(binding.root, "Playing: ${track.displayTitle}", Snackbar.LENGTH_SHORT).show()
     }
 
     private fun onMoreClick(track: Track) {
-        Snackbar.make(binding.root, "More options for: ${track.title}", Snackbar.LENGTH_SHORT).show()
+        // TODO: Show options menu
+        Snackbar.make(binding.root, "More options for: ${track.displayTitle}", Snackbar.LENGTH_SHORT).show()
     }
 }

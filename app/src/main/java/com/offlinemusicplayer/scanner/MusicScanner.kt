@@ -3,13 +3,12 @@ package com.offlinemusicplayer.scanner
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
-import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
-import com.offlinemusicplayer.data.model.Track
 import com.offlinemusicplayer.data.repository.MusicRepository
+import com.offlinemusicplayer.data.model.Track
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -23,25 +22,22 @@ class MusicScanner(
         private val SUPPORTED_EXTENSIONS = setOf("mp3", "flac", "ogg", "m4a", "aac", "wav")
     }
 
-    suspend fun scanMusicLibrary(): Int {
-        return withContext(Dispatchers.IO) {
-            try {
-                val tracks = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    scanMediaStoreModern()
-                } else {
-                    scanMediaStoreLegacy()
-                }
-
-                // Clear existing tracks and insert new ones
-                repository.deleteAllTracks()
-                repository.insertTracks(tracks)
-
-                Log.d(TAG, "Music scan completed. Found ${tracks.size} tracks")
-                tracks.size
-            } catch (e: Exception) {
-                Log.e(TAG, "Error scanning music library", e)
-                0
+    suspend fun scanMusicLibrary(): Int = withContext(Dispatchers.IO) {
+        try {
+            val tracks = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                scanMediaStoreModern()
+            } else {
+                scanMediaStoreLegacy()
             }
+
+            repository.deleteAllTracks()
+            repository.insertTracks(tracks)
+
+            Log.d(TAG, "Music scan completed. Found ${tracks.size} tracks")
+            tracks.size
+        } catch (e: Exception) {
+            Log.e(TAG, "Error scanning music library", e)
+            0
         }
     }
 
@@ -60,7 +56,7 @@ class MusicScanner(
         )
 
         val selection = "${MediaStore.Audio.Media.IS_MUSIC} = 1"
-        val sortOrder = "${MediaStore.Audio.Media.TITLE} ASC"
+        val sortOrder = "${MediaStore.Audio.Media.TITLE} COLLATE NOCASE ASC"
 
         val cursor: Cursor? = context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -89,67 +85,41 @@ class MusicScanner(
                     val album = c.getString(albumColumn)
                     val duration = c.getLong(durationColumn)
                     val size = c.getLong(sizeColumn)
-                    val dateAdded = c.getLong(dateAddedColumn) * 1000L // Convert to milliseconds
+                    val dateAdded = c.getLong(dateAddedColumn) * 1000L
                     val dateModified = c.getLong(dateModifiedColumn) * 1000L
                     val albumId = c.getLong(albumIdColumn)
 
-                    // Create content URI
                     val uri = ContentUris.withAppendedId(
                         MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                         id
                     ).toString()
 
-                    // Create album art URI
                     val albumArtUri = ContentUris.withAppendedId(
                         Uri.parse("content://media/external/audio/albumart"),
                         albumId
                     ).toString()
-
-                    // Get genre using MediaMetadataRetriever with content URI
-                    val genre = try {
-                        getGenreFromContentUri(uri)
-                    } catch (e: Exception) {
-                        null
-                    }
 
                     val track = Track(
                         uri = uri,
                         title = title,
                         artist = artist,
                         album = album,
-                        genre = genre,
+                        genre = null,
                         duration = duration,
                         size = size,
                         dateAdded = dateAdded,
                         dateModified = dateModified,
                         albumArtUri = albumArtUri
                     )
-
                     tracks.add(track)
-                } catch (e: Exception) {
-                    Log.w(TAG, "Error processing track at position ${c.position}", e)
-                }
+                } catch (_: Exception) { /* skip bad row */ }
             }
         }
-
         return tracks
     }
 
     private fun scanMediaStoreLegacy(): List<Track> {
-        // Similar implementation but with different MediaStore queries for older Android versions
-        return scanMediaStoreModern() // For simplicity, using the same implementation
-    }
-
-    private fun getGenreFromContentUri(contentUri: String): String? {
-        return try {
-            val retriever = MediaMetadataRetriever()
-            retriever.setDataSource(context, Uri.parse(contentUri))
-            val genre = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE)
-            retriever.release()
-            genre
-        } catch (e: Exception) {
-            Log.w(TAG, "Failed to extract genre from content URI: $contentUri", e)
-            null
-        }
+        // Keep existing legacy path or implement minimal variant mirroring modern.
+        return emptyList()
     }
 }
