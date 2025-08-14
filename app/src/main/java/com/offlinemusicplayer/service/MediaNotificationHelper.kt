@@ -4,6 +4,7 @@ import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import androidx.core.app.NotificationCompat
 import androidx.media3.common.Player
 import androidx.media3.session.MediaSession
@@ -35,7 +36,8 @@ object MediaNotificationHelper {
             setContentTitle(metadata.title ?: context.getString(R.string.app_name))
             setContentText(metadata.artist)
             setSubText(metadata.albumTitle)
-            setLargeIcon(null)
+            // Disambiguate the overload by casting null to Bitmap?
+            setLargeIcon(null as Bitmap?)
             setContentIntent(mediaSession.sessionActivity)
             setDeleteIntent(createStopIntent(context))
             setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

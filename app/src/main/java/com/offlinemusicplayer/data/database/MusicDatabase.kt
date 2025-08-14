@@ -18,15 +18,19 @@ abstract class MusicDatabase : RoomDatabase() {
 
     abstract fun settingsDao(): SettingsDao
 
-    override fun onOpen(db: SupportSQLiteDatabase) {
-        super.onOpen(db)
-        // Create FTS5 table if supported
-        if (isFts5Supported(db)) {
-            createFtsTable(db)
-        }
-    }
-
     companion object {
+        // Attach this callback when building the DB (see note below)
+        val FTS_CALLBACK =
+            object : RoomDatabase.Callback() {
+                override fun onOpen(db: SupportSQLiteDatabase) {
+                    super.onOpen(db)
+                    // Create FTS5 table if supported
+                    if (isFts5Supported(db)) {
+                        createFtsTable(db)
+                    }
+                }
+            }
+
         // Migration objects for future version changes
         val MIGRATION_1_2 =
             object : Migration(1, 2) {

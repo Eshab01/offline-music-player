@@ -18,12 +18,7 @@ android {
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        // Room schema export
-        ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
-            arg("room.incremental", "true")
-        }
+        // Moved KSP args to the top-level `ksp {}` block below
     }
 
     buildTypes {
@@ -54,12 +49,22 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true // Explicitly enable BuildConfig (default is true for application modules)
     }
 
     lint {
         abortOnError = false
         warningsAsErrors = false
     }
+
+    // If you use Room migration tests, expose exported schemas to androidTest assets:
+    // sourceSets["androidTest"].assets.srcDirs(file("$projectDir/schemas"))
+}
+
+// KSP arguments (top-level)
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.incremental", "true")
 }
 
 ktlint {
@@ -79,12 +84,14 @@ detekt {
 }
 
 dependencies {
-    // Core Android (updated)
+    // Detekt formatting plugin
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.4")
+
+    // Core Android
     implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.appcompat:appcompat:1.6.1") // fixed version
-    implementation("com.google.android.material:material:1.11.0") // fixed version
-    implementation("androidx.cardview:cardview:1.0.0") // added for CardView
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.11.0")
+    implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0")
     implementation("androidx.fragment:fragment-ktx:1.8.2")
     implementation("androidx.activity:activity-ktx:1.9.2")
@@ -94,24 +101,20 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.6")
     implementation("androidx.lifecycle:lifecycle-service:2.8.6")
 
-    // Pagin
-    implementation("androidx.room:room-paging:2.5.2")
-
-    // Room
+    // Room + Paging (align versions)
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
+    implementation("androidx.room:room-paging:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
 
     // RecyclerView & Paging
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.paging:paging-runtime-ktx:3.3.2")
 
-    // Media3 (upgrade)
+    // Media3
     implementation("androidx.media3:media3-exoplayer:1.4.1")
     implementation("androidx.media3:media3-session:1.4.1")
     implementation("androidx.media3:media3-ui:1.4.1")
-    // If no longer needed, MediaCompat can be removed:
-    // implementation("androidx.media:media:1.7.0")
 
     // Image loading
     implementation("io.coil-kt:coil:2.6.0")
