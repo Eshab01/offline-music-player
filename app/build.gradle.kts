@@ -82,8 +82,9 @@ dependencies {
     // Core Android (updated)
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.4")
     implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.appcompat:appcompat:1.6.1") // fixed version
+    implementation("com.google.android.material:material:1.11.0") // fixed version
+    implementation("androidx.cardview:cardview:1.0.0") // added for CardView
     implementation("androidx.constraintlayout:constraintlayout:2.2.0")
     implementation("androidx.fragment:fragment-ktx:1.8.2")
     implementation("androidx.activity:activity-ktx:1.9.2")
