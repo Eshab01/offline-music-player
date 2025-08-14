@@ -60,7 +60,7 @@
         <!-- Media Button Receiver -->
         <receiver
             android:name=".receiver.MediaButtonReceiver"
-            android:exported="true">
+            android:exported="false">
             <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>

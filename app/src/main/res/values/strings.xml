@@ -73,4 +73,8 @@
     
     <!-- Queue -->
     <string name="currently_playing">Currently playing</string>
+    
+    <!-- Additional strings -->
+    <string name="permission_denied">Permission denied</string>
+    <string name="notification_preparing">Preparing playback…</string>
 </resources>
