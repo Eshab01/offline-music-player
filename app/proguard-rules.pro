@@ -31,3 +31,26 @@
 
 # Coil
 -dontwarn coil.**
+
+# Compose
+-keepclassmembers class androidx.compose.** { *; }
+-keep class androidx.compose.** { *; }
+-dontwarn androidx.compose.**
+
+# DataStore
+-keep class androidx.datastore.** { *; }
+-dontwarn androidx.datastore.**
+
+# Coroutines
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+-keepclassmembers class kotlinx.coroutines.** {
+    volatile <fields>;
+}
+
+# Keep data classes used by Room and DataStore
+-keep class com.offlinemusicplayer.data.model.** { *; }
+
+# Keep equalizer classes
+-keep class android.media.audiofx.** { *; }
+-dontwarn android.media.audiofx.**
