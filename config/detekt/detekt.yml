@@ -438,12 +438,3 @@ style:
     active: true
   WildcardImport:
     active: true
-
-libraries:
-  ForbiddenPublicDataClass:
-    active: false
-  LibraryCodeMustSpecifyReturnType:
-    active: true
-    excludes: ["**"]
-  LibraryEntitiesShouldNotBePublic:
-    active: false
