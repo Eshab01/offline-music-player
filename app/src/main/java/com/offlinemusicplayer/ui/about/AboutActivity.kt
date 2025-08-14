@@ -9,7 +9,6 @@ import com.offlinemusicplayer.R
 import com.offlinemusicplayer.databinding.ActivityAboutBinding
 
 class AboutActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityAboutBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

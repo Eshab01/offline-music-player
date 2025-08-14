@@ -15,37 +15,42 @@ import java.util.concurrent.TimeUnit
 class QueueAdapter(
     private val onTrackClick: (Track, Int) -> Unit,
     private val onTrackRemove: (Track, Int) -> Unit,
-    private val onTrackMove: (Int, Int) -> Unit
+    private val onTrackMove: (Int, Int) -> Unit,
 ) : ListAdapter<Track, QueueAdapter.QueueTrackViewHolder>(QueueTrackDiffCallback()) {
-
     private var currentPlayingIndex = -1
 
     fun setCurrentPlaying(index: Int) {
         val oldIndex = currentPlayingIndex
         currentPlayingIndex = index
-        
+
         if (oldIndex != -1) notifyItemChanged(oldIndex)
         if (currentPlayingIndex != -1) notifyItemChanged(currentPlayingIndex)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): QueueTrackViewHolder {
-        val binding = ItemQueueTrackBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): QueueTrackViewHolder {
+        val binding =
+            ItemQueueTrackBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false,
+            )
         return QueueTrackViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: QueueTrackViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: QueueTrackViewHolder,
+        position: Int,
+    ) {
         val track = getItem(position)
         holder.bind(track, position == currentPlayingIndex)
     }
 
     inner class QueueTrackViewHolder(
-        private val binding: ItemQueueTrackBinding
+        private val binding: ItemQueueTrackBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
-
         init {
             binding.root.setOnClickListener {
                 val position = bindingAdapterPosition
@@ -55,18 +60,22 @@ class QueueAdapter(
             }
         }
 
-        fun bind(track: Track, isCurrentlyPlaying: Boolean) {
+        fun bind(
+            track: Track,
+            isCurrentlyPlaying: Boolean,
+        ) {
             binding.apply {
                 title.text = track.displayTitle
                 artist.text = track.displayArtist
                 duration.text = formatDuration(track.duration)
 
                 // Show playing indicator
-                playingIndicator.visibility = if (isCurrentlyPlaying) {
-                    android.view.View.VISIBLE
-                } else {
-                    android.view.View.GONE
-                }
+                playingIndicator.visibility =
+                    if (isCurrentlyPlaying) {
+                        android.view.View.VISIBLE
+                    } else {
+                        android.view.View.GONE
+                    }
 
                 // Load album art
                 albumArt.load(track.albumArtUri) {
@@ -96,46 +105,54 @@ class QueueAdapter(
     }
 
     class QueueTrackDiffCallback : DiffUtil.ItemCallback<Track>() {
-        override fun areItemsTheSame(oldItem: Track, newItem: Track): Boolean {
-            return oldItem.id == newItem.id
-        }
+        override fun areItemsTheSame(
+            oldItem: Track,
+            newItem: Track,
+        ): Boolean = oldItem.id == newItem.id
 
-        override fun areContentsTheSame(oldItem: Track, newItem: Track): Boolean {
-            return oldItem == newItem
-        }
+        override fun areContentsTheSame(
+            oldItem: Track,
+            newItem: Track,
+        ): Boolean = oldItem == newItem
     }
 
     // ItemTouchHelper for swipe-to-remove and drag-to-reorder
     fun getItemTouchHelper(): ItemTouchHelper {
-        return ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
-        ) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                val fromPosition = viewHolder.bindingAdapterPosition
-                val toPosition = target.bindingAdapterPosition
-                
-                if (fromPosition != RecyclerView.NO_POSITION && toPosition != RecyclerView.NO_POSITION) {
-                    onTrackMove(fromPosition, toPosition)
-                    return true
-                }
-                return false
-            }
+        return ItemTouchHelper(
+            object : ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT,
+            ) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder,
+                ): Boolean {
+                    val fromPosition = viewHolder.bindingAdapterPosition
+                    val toPosition = target.bindingAdapterPosition
 
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.bindingAdapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    val track = getItem(position)
-                    onTrackRemove(track, position)
+                    if (fromPosition != RecyclerView.NO_POSITION && toPosition != RecyclerView.NO_POSITION) {
+                        onTrackMove(fromPosition, toPosition)
+                        return true
+                    }
+                    return false
                 }
-            }
 
-            override fun isLongPressDragEnabled(): Boolean = true
-            override fun isItemViewSwipeEnabled(): Boolean = true
-        })
+                override fun onSwiped(
+                    viewHolder: RecyclerView.ViewHolder,
+                    direction: Int,
+                ) {
+                    val position = viewHolder.bindingAdapterPosition
+                    if (position != RecyclerView.NO_POSITION) {
+                        val track = getItem(position)
+                        onTrackRemove(track, position)
+                    }
+                }
+
+                override fun isLongPressDragEnabled(): Boolean = true
+
+                override fun isItemViewSwipeEnabled(): Boolean = true
+            },
+        )
     }
 }
