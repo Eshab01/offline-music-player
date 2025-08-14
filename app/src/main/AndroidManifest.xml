@@ -18,7 +18,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".MusicPlayerApplication"
+        android:name="com.eshab.offlineplayer.App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -30,7 +30,7 @@
 
         <!-- Main Activity -->
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name="com.eshab.offlineplayer.ui.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.OfflineMusicPlayer">
             <intent-filter>
@@ -39,16 +39,9 @@
             </intent-filter>
         </activity>
 
-        <!-- About Activity -->
-        <activity
-            android:name=".ui.about.AboutActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.main.MainActivity"
-            android:theme="@style/Theme.OfflineMusicPlayer" />
-
         <!-- Music Player Service -->
         <service
-            android:name=".service.MusicPlayerService"
+            android:name="com.eshab.offlineplayer.media.MusicService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback">
@@ -56,24 +49,6 @@
                 <action android:name="androidx.media3.session.MediaSessionService" />
             </intent-filter>
         </service>
-
-        <!-- Media Button Receiver -->
-        <receiver
-            android:name=".receiver.MediaButtonReceiver"
-            android:exported="false">
-            <intent-filter android:priority="1000">
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
-            </intent-filter>
-        </receiver>
-
-        <!-- Audio Becoming Noisy Receiver -->
-        <receiver
-            android:name=".receiver.AudioNoisyReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
-            </intent-filter>
-        </receiver>
 
         <!-- File provider for sharing -->
         <provider
