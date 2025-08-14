@@ -7,13 +7,17 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MediaStoreObserver(
     private val context: Context,
-    private val onMediaChanged: suspend () -> Unit
+    private val onMediaChanged: suspend () -> Unit,
 ) : ContentObserver(Handler(Looper.getMainLooper())) {
-
     companion object {
         private const val TAG = "MediaStoreObserver"
         private const val DEBOUNCE_DELAY_MS = 500L
@@ -27,7 +31,7 @@ class MediaStoreObserver(
             context.contentResolver.registerContentObserver(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 true,
-                this
+                this,
             )
             Log.d(TAG, "Started observing MediaStore changes")
         } catch (e: Exception) {
@@ -45,19 +49,23 @@ class MediaStoreObserver(
         }
     }
 
-    override fun onChange(selfChange: Boolean, uri: Uri?) {
+    override fun onChange(
+        selfChange: Boolean,
+        uri: Uri?,
+    ) {
         super.onChange(selfChange, uri)
-        
+
         // Debounce rapid changes
         debounceJob?.cancel()
-        debounceJob = scope.launch {
-            delay(DEBOUNCE_DELAY_MS)
-            try {
-                Log.d(TAG, "MediaStore changed, triggering refresh")
-                onMediaChanged()
-            } catch (e: Exception) {
-                Log.e(TAG, "Error handling MediaStore change", e)
+        debounceJob =
+            scope.launch {
+                delay(DEBOUNCE_DELAY_MS)
+                try {
+                    Log.d(TAG, "MediaStore changed, triggering refresh")
+                    onMediaChanged()
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error handling MediaStore change", e)
+                }
             }
-        }
     }
 }

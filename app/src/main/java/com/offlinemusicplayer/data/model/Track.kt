@@ -14,8 +14,8 @@ import androidx.room.PrimaryKey
         Index(value = ["ovTitle"]),
         Index(value = ["ovArtist"]),
         Index(value = ["ovAlbum"]),
-        Index(value = ["ovGenre"])
-    ]
+        Index(value = ["ovGenre"]),
+    ],
 )
 data class Track(
     @PrimaryKey(autoGenerate = true)
@@ -34,7 +34,7 @@ data class Track(
     val ovTitle: String? = null,
     val ovArtist: String? = null,
     val ovAlbum: String? = null,
-    val ovGenre: String? = null
+    val ovGenre: String? = null,
 ) {
     val displayTitle: String get() = ovTitle ?: title
     val displayArtist: String get() = ovArtist ?: artist ?: "Unknown Artist"

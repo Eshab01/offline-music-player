@@ -1,12 +1,14 @@
 package com.offlinemusicplayer.data.database
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import com.offlinemusicplayer.data.model.Setting
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SettingsDao {
-    
     @Query("SELECT * FROM settings WHERE key = :key")
     suspend fun getSetting(key: String): Setting?
 

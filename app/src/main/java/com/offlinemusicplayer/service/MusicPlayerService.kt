@@ -19,7 +19,6 @@ import com.offlinemusicplayer.R
 import com.offlinemusicplayer.ui.main.MainActivity
 
 class MusicPlayerService : MediaSessionService() {
-
     private var mediaSession: MediaSession? = null
     private lateinit var player: ExoPlayer
     private lateinit var audioManager: AudioManager
@@ -27,18 +26,20 @@ class MusicPlayerService : MediaSessionService() {
 
     override fun onCreate() {
         super.onCreate()
-        val initialNotification = NotificationCompat.Builder(this, MusicPlayerApplication.CHANNEL_ID)
-            .setContentTitle(getString(R.string.app_name))
-            .setContentText(getString(R.string.notification_preparing))
-            .setSmallIcon(R.drawable.ic_music_note)
-            .setOnlyAlertOnce(true)
-            .setOngoing(true)
-            .build()
+        val initialNotification =
+            NotificationCompat
+                .Builder(this, MusicPlayerApplication.CHANNEL_ID)
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(getString(R.string.notification_preparing))
+                .setSmallIcon(R.drawable.ic_music_note)
+                .setOnlyAlertOnce(true)
+                .setOngoing(true)
+                .build()
         if (Build.VERSION.SDK_INT >= 29) {
             startForeground(
                 NOTIFICATION_ID,
                 initialNotification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK,
             )
         } else {
             @Suppress("DEPRECATION")
@@ -48,7 +49,11 @@ class MusicPlayerService : MediaSessionService() {
         initializeSessionAndPlayer()
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int,
+    ): Int {
         intent?.action?.let { action ->
             when (action) {
                 MediaNotificationHelper.ACTION_PLAY -> player.play()
@@ -78,17 +83,20 @@ class MusicPlayerService : MediaSessionService() {
     }
 
     private fun initializeSessionAndPlayer() {
-        player = ExoPlayer.Builder(this).build().apply {
-            setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(C.USAGE_MEDIA)
-                    .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-                    .build(),
-                /* handleAudioFocus = */ true
-            )
-            setHandleAudioBecomingNoisy(true)
-            setWakeMode(C.WAKE_MODE_LOCAL)
-        }
+        player =
+            ExoPlayer.Builder(this).build().apply {
+                setAudioAttributes(
+                    AudioAttributes
+                        .Builder()
+                        .setUsage(C.USAGE_MEDIA)
+                        .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+                        .build(),
+                    // handleAudioFocus =
+                    true,
+                )
+                setHandleAudioBecomingNoisy(true)
+                setWakeMode(C.WAKE_MODE_LOCAL)
+            }
 
         audioManager = getSystemService(AudioManager::class.java)
         audioFocusHandler = AudioFocusHandler(audioManager, player)
@@ -98,30 +106,42 @@ class MusicPlayerService : MediaSessionService() {
                 this,
                 0,
                 Intent(this, MainActivity::class.java),
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
             )
 
-        mediaSession = MediaSession.Builder(this, player)
-            .setCallback(MediaSessionCallback())
-            .setSessionActivity(sessionActivityPendingIntent)
-            .build()
+        mediaSession =
+            MediaSession
+                .Builder(this, player)
+                .setCallback(MediaSessionCallback())
+                .setSessionActivity(sessionActivityPendingIntent)
+                .build()
 
-        player.addListener(object : Player.Listener {
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                when (playbackState) {
-                    Player.STATE_READY -> if (player.playWhenReady) audioFocusHandler.requestAudioFocus()
-                    Player.STATE_ENDED, Player.STATE_IDLE -> audioFocusHandler.abandonAudioFocus()
+        player.addListener(
+            object : Player.Listener {
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    when (playbackState) {
+                        Player.STATE_READY -> if (player.playWhenReady) audioFocusHandler.requestAudioFocus()
+                        Player.STATE_ENDED, Player.STATE_IDLE -> audioFocusHandler.abandonAudioFocus()
+                    }
+                    updateNotification()
                 }
-                updateNotification()
-            }
 
-            override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
-                if (playWhenReady) audioFocusHandler.requestAudioFocus() else audioFocusHandler.abandonAudioFocus()
-                updateNotification()
-            }
+                override fun onPlayWhenReadyChanged(
+                    playWhenReady: Boolean,
+                    reason: Int,
+                ) {
+                    if (playWhenReady) audioFocusHandler.requestAudioFocus() else audioFocusHandler.abandonAudioFocus()
+                    updateNotification()
+                }
 
-            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) { updateNotification() }
-        })
+                override fun onMediaItemTransition(
+                    mediaItem: MediaItem?,
+                    reason: Int,
+                ) {
+                    updateNotification()
+                }
+            },
+        )
 
         updateNotification()
     }
@@ -137,5 +157,7 @@ class MusicPlayerService : MediaSessionService() {
         }
     }
 
-    companion object { private const val NOTIFICATION_ID = 1 }
+    companion object {
+        private const val NOTIFICATION_ID = 1
+    }
 }

@@ -45,7 +45,7 @@ complexity:
     constructorThreshold: 7
     ignoreDefaultParameters: false
     ignoreDataClasses: true
-    ignoreAnnotated: ['']
+    ignoreAnnotated: [""]
   MethodOverloading:
     active: false
   NestedBlockDepth:
@@ -68,7 +68,8 @@ empty-blocks:
   active: true
   EmptyCatchBlock:
     active: true
-    allowedExceptionNameRegex: '_|(ignore|expected).*'
+    # trunk-ignore(yamllint/quoted-strings)
+    allowedExceptionNameRegex: "_|(ignore|expected).*"
   EmptyClassBlock:
     active: true
   EmptyDefaultConstructor:
@@ -134,7 +135,8 @@ exceptions:
       - IndexOutOfBoundsException
       - RuntimeException
       - Throwable
-    allowedExceptionNameRegex: '_|(ignore|expected).*'
+    # trunk-ignore(yamllint/quoted-strings)
+    allowedExceptionNameRegex: "_|(ignore|expected).*"
   TooGenericExceptionThrown:
     active: true
     exceptionNames:
@@ -152,16 +154,17 @@ naming:
   active: true
   ClassNaming:
     active: true
-    classPattern: '[A-Z][a-zA-Z0-9]*'
+    classPattern: "[A-Z][a-zA-Z0-9]*"
   ConstructorParameterNaming:
     active: true
-    parameterPattern: '[a-z][A-Za-z0-9]*'
-    privateParameterPattern: '[a-z][A-Za-z0-9]*'
-    excludeClassPattern: '$^'
+    parameterPattern: "[a-z][A-Za-z0-9]*"
+    privateParameterPattern: "[a-z][A-Za-z0-9]*"
+    # trunk-ignore(yamllint/quoted-strings)
+    excludeClassPattern: "$^"
     ignoreOverridden: true
   EnumNaming:
     active: true
-    enumEntryPattern: '[A-Z][_a-zA-Z0-9]*'
+    enumEntryPattern: "[A-Z][_a-zA-Z0-9]*"
   ForbiddenClassName:
     active: false
   FunctionMaxLength:
@@ -170,14 +173,17 @@ naming:
     active: false
   FunctionNaming:
     active: true
-    functionPattern: '[a-z][a-zA-Z0-9]*'
-    excludeClassPattern: '$^'
+    functionPattern: "[a-z][a-zA-Z0-9]*"
+    # trunk-ignore(yamllint/quoted-strings)
+    excludeClassPattern: "$^"
     ignoreOverridden: true
-    ignoreAnnotated: ['Composable']
+    # trunk-ignore(yamllint/quoted-strings)
+    ignoreAnnotated: ["Composable"]
   FunctionParameterNaming:
     active: true
-    parameterPattern: '[a-z][A-Za-z0-9]*'
-    excludeClassPattern: '$^'
+    parameterPattern: "[a-z][A-Za-z0-9]*"
+    # trunk-ignore(yamllint/quoted-strings)
+    excludeClassPattern: "$^"
     ignoreOverridden: true
   InvalidPackageDeclaration:
     active: false
@@ -189,26 +195,30 @@ naming:
     ignoreOverridden: true
   ObjectPropertyNaming:
     active: true
-    constantPattern: '[A-Za-z][_A-Za-z0-9]*'
-    propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
-    privatePropertyPattern: '(_)?[A-Za-z][_A-Za-z0-9]*'
+    constantPattern: "[A-Za-z][_A-Za-z0-9]*"
+    propertyPattern: "[A-Za-z][_A-Za-z0-9]*"
+    # trunk-ignore(yamllint/quoted-strings)
+    privatePropertyPattern: "(_)?[A-Za-z][_A-Za-z0-9]*"
   PackageNaming:
     active: true
     packagePattern: '[a-z]+(\.[a-z][A-Za-z0-9]*)*'
   TopLevelPropertyNaming:
     active: true
-    constantPattern: '[A-Z][_A-Z0-9]*'
-    propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
-    privatePropertyPattern: '_?[A-Za-z][_A-Za-z0-9]*'
+    constantPattern: "[A-Z][_A-Z0-9]*"
+    propertyPattern: "[A-Za-z][_A-Za-z0-9]*"
+    # trunk-ignore(yamllint/quoted-strings)
+    privatePropertyPattern: "_?[A-Za-z][_A-Za-z0-9]*"
   VariableMaxLength:
     active: false
   VariableMinLength:
     active: false
   VariableNaming:
     active: true
-    variablePattern: '[a-z][A-Za-z0-9]*'
-    privateVariablePattern: '(_)?[a-z][A-Za-z0-9]*'
-    excludeClassPattern: '$^'
+    variablePattern: "[a-z][A-Za-z0-9]*"
+    # trunk-ignore(yamllint/quoted-strings)
+    privateVariablePattern: "(_)?[a-z][A-Za-z0-9]*"
+    # trunk-ignore(yamllint/quoted-strings)
+    excludeClassPattern: "$^"
     ignoreOverridden: true
 
 performance:
@@ -217,10 +227,24 @@ performance:
     active: true
   ForEachOnRange:
     active: true
-    excludes: ['**/test/**', '**/androidTest/**', '**/*Test.kt', '**/*Spec.kt', '**/*Spek.kt']
+    excludes:
+      [
+        "**/test/**",
+        "**/androidTest/**",
+        "**/*Test.kt",
+        "**/*Spec.kt",
+        "**/*Spek.kt",
+      ]
   SpreadOperator:
     active: true
-    excludes: ['**/test/**', '**/androidTest/**', '**/*Test.kt', '**/*Spec.kt', '**/*Spek.kt']
+    excludes:
+      [
+        "**/test/**",
+        "**/androidTest/**",
+        "**/*Test.kt",
+        "**/*Spec.kt",
+        "**/*Spek.kt",
+      ]
   UnnecessaryTemporaryInstantiation:
     active: true
 
@@ -298,8 +322,8 @@ style:
     active: false
   ForbiddenComment:
     active: true
-    values: ['TODO:', 'FIXME:', 'STOPSHIP:']
-    allowedPatterns: ''
+    values: ["TODO:", "FIXME:", "STOPSHIP:"]
+    allowedPatterns: ""
   ForbiddenImport:
     active: false
   ForbiddenMethodCall:
@@ -312,11 +336,13 @@ style:
     active: true
     ignoreOverridableFunction: true
     ignoreActualFunction: true
-    excludedFunctions: 'describeContents'
-    excludeAnnotatedFunction: ['dagger.Provides']
+    # trunk-ignore(yamllint/quoted-strings)
+    excludedFunctions: "describeContents"
+    # trunk-ignore(yamllint/quoted-strings)
+    excludeAnnotatedFunction: ["dagger.Provides"]
   LibraryCodeMustSpecifyReturnType:
     active: true
-    excludes: ['**']
+    excludes: ["**"]
   LibraryEntitiesShouldNotBePublic:
     active: false
   LoopWithTooManyJumpStatements:
@@ -324,8 +350,15 @@ style:
     maxJumpCount: 1
   MagicNumber:
     active: true
-    excludes: ['**/test/**', '**/androidTest/**', '**/*Test.kt', '**/*Spec.kt', '**/*Spek.kt']
-    ignoreNumbers: ['-1', '0', '1', '2']
+    excludes:
+      [
+        "**/test/**",
+        "**/androidTest/**",
+        "**/*Test.kt",
+        "**/*Spec.kt",
+        "**/*Spek.kt",
+      ]
+    ignoreNumbers: ["-1", "0", "1", "2"]
     ignoreHashCodeFunction: true
     ignorePropertyDeclaration: false
     ignoreLocalVariableDeclaration: false
@@ -375,7 +408,8 @@ style:
   ReturnCount:
     active: true
     max: 2
-    excludedFunctions: 'equals'
+    # trunk-ignore(yamllint/quoted-strings)
+    excludedFunctions: "equals"
     excludeLabeled: false
     excludeReturnFromLambda: true
     excludeGuardClauses: false
@@ -395,7 +429,8 @@ style:
     active: false
   UnnecessaryAbstractClass:
     active: true
-    excludeAnnotatedClasses: ['dagger.Module']
+    # trunk-ignore(yamllint/quoted-strings)
+    excludeAnnotatedClasses: ["dagger.Module"]
   UnnecessaryAnnotationUseSiteTarget:
     active: false
   UnnecessaryApply:
@@ -414,7 +449,8 @@ style:
     active: true
   UnusedPrivateMember:
     active: true
-    allowedNames: '(_|ignored|expected|serialVersionUID)'
+    # trunk-ignore(yamllint/quoted-strings)
+    allowedNames: "(_|ignored|expected|serialVersionUID)"
   UseArrayLiteralsInAnnotations:
     active: false
   UseCheckNotNull:

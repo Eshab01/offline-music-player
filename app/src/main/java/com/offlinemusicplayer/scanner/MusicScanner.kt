@@ -7,64 +7,67 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
-import com.offlinemusicplayer.data.repository.MusicRepository
 import com.offlinemusicplayer.data.model.Track
+import com.offlinemusicplayer.data.repository.MusicRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class MusicScanner(
     private val context: Context,
-    private val repository: MusicRepository
+    private val repository: MusicRepository,
 ) {
-
     companion object {
         private const val TAG = "MusicScanner"
         private val SUPPORTED_EXTENSIONS = setOf("mp3", "flac", "ogg", "m4a", "aac", "wav")
     }
 
-    suspend fun scanMusicLibrary(): Int = withContext(Dispatchers.IO) {
-        try {
-            val tracks = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                scanMediaStoreModern()
-            } else {
-                scanMediaStoreLegacy()
+    suspend fun scanMusicLibrary(): Int =
+        withContext(Dispatchers.IO) {
+            try {
+                val tracks =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        scanMediaStoreModern()
+                    } else {
+                        scanMediaStoreLegacy()
+                    }
+
+                repository.deleteAllTracks()
+                repository.insertTracks(tracks)
+
+                Log.d(TAG, "Music scan completed. Found ${tracks.size} tracks")
+                tracks.size
+            } catch (e: Exception) {
+                Log.e(TAG, "Error scanning music library", e)
+                0
             }
-
-            repository.deleteAllTracks()
-            repository.insertTracks(tracks)
-
-            Log.d(TAG, "Music scan completed. Found ${tracks.size} tracks")
-            tracks.size
-        } catch (e: Exception) {
-            Log.e(TAG, "Error scanning music library", e)
-            0
         }
-    }
 
     private fun scanMediaStoreModern(): List<Track> {
         val tracks = mutableListOf<Track>()
-        val projection = arrayOf(
-            MediaStore.Audio.Media._ID,
-            MediaStore.Audio.Media.TITLE,
-            MediaStore.Audio.Media.ARTIST,
-            MediaStore.Audio.Media.ALBUM,
-            MediaStore.Audio.Media.DURATION,
-            MediaStore.Audio.Media.SIZE,
-            MediaStore.Audio.Media.DATE_ADDED,
-            MediaStore.Audio.Media.DATE_MODIFIED,
-            MediaStore.Audio.Media.ALBUM_ID
-        )
+        val projection =
+            arrayOf(
+                MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.Media.DURATION,
+                MediaStore.Audio.Media.SIZE,
+                MediaStore.Audio.Media.DATE_ADDED,
+                MediaStore.Audio.Media.DATE_MODIFIED,
+                MediaStore.Audio.Media.ALBUM_ID,
+            )
 
         val selection = "${MediaStore.Audio.Media.IS_MUSIC} = 1"
         val sortOrder = "${MediaStore.Audio.Media.TITLE} COLLATE NOCASE ASC"
 
-        val cursor: Cursor? = context.contentResolver.query(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-            projection,
-            selection,
-            null,
-            sortOrder
-        )
+        val cursor: Cursor? =
+            context.contentResolver.query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                selection,
+                null,
+                sortOrder,
+            )
 
         cursor?.use { c ->
             val idColumn = c.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
@@ -89,30 +92,37 @@ class MusicScanner(
                     val dateModified = c.getLong(dateModifiedColumn) * 1000L
                     val albumId = c.getLong(albumIdColumn)
 
-                    val uri = ContentUris.withAppendedId(
-                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                        id
-                    ).toString()
+                    val uri =
+                        ContentUris
+                            .withAppendedId(
+                                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                                id,
+                            ).toString()
 
-                    val albumArtUri = ContentUris.withAppendedId(
-                        Uri.parse("content://media/external/audio/albumart"),
-                        albumId
-                    ).toString()
+                    val albumArtUri =
+                        ContentUris
+                            .withAppendedId(
+                                Uri.parse("content://media/external/audio/albumart"),
+                                albumId,
+                            ).toString()
 
-                    val track = Track(
-                        uri = uri,
-                        title = title,
-                        artist = artist,
-                        album = album,
-                        genre = null,
-                        duration = duration,
-                        size = size,
-                        dateAdded = dateAdded,
-                        dateModified = dateModified,
-                        albumArtUri = albumArtUri
-                    )
+                    val track =
+                        Track(
+                            uri = uri,
+                            title = title,
+                            artist = artist,
+                            album = album,
+                            genre = null,
+                            duration = duration,
+                            size = size,
+                            dateAdded = dateAdded,
+                            dateModified = dateModified,
+                            albumArtUri = albumArtUri,
+                        )
                     tracks.add(track)
-                } catch (_: Exception) { /* skip bad row */ }
+                } catch (_: Exception) {
+                    // skip bad row
+                }
             }
         }
         return tracks

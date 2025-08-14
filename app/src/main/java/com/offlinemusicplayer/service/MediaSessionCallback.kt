@@ -12,26 +12,28 @@ class MediaSessionCallback : MediaSession.Callback {
     override fun onAddMediaItems(
         mediaSession: MediaSession,
         controller: MediaSession.ControllerInfo,
-        mediaItems: List<MediaItem>
+        mediaItems: List<MediaItem>,
     ): ListenableFuture<List<MediaItem>> {
-        val updatedMediaItems = mediaItems.map { mediaItem ->
-            mediaItem.buildUpon()
-                .setUri(mediaItem.requestMetadata.mediaUri)
-                .build()
-        }
+        val updatedMediaItems =
+            mediaItems.map { mediaItem ->
+                mediaItem
+                    .buildUpon()
+                    .setUri(mediaItem.requestMetadata.mediaUri)
+                    .build()
+            }
         return Futures.immediateFuture(updatedMediaItems)
     }
 
     override fun onConnect(
         session: MediaSession,
-        controller: MediaSession.ControllerInfo
+        controller: MediaSession.ControllerInfo,
     ): MediaSession.ConnectionResult {
         val connectionResult = super.onConnect(session, controller)
         val availableSessionCommands = connectionResult.availableSessionCommands.buildUpon()
 
         return MediaSession.ConnectionResult.accept(
             availableSessionCommands.build(),
-            connectionResult.availablePlayerCommands
+            connectionResult.availablePlayerCommands,
         )
     }
 
@@ -39,8 +41,6 @@ class MediaSessionCallback : MediaSession.Callback {
         session: MediaSession,
         controller: MediaSession.ControllerInfo,
         customCommand: SessionCommand,
-        args: Bundle
-    ): ListenableFuture<SessionResult> {
-        return super.onCustomCommand(session, controller, customCommand, args)
-    }
+        args: Bundle,
+    ): ListenableFuture<SessionResult> = super.onCustomCommand(session, controller, customCommand, args)
 }

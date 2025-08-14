@@ -10,8 +10,10 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.offlinemusicplayer.service.MusicPlayerService
 
 class AudioNoisyReceiver : BroadcastReceiver() {
-
-    override fun onReceive(context: Context, intent: Intent) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent,
+    ) {
         if (intent.action == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
             pausePlayback(context)
         }
