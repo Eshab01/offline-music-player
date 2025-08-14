@@ -1,7 +1,6 @@
 package com.eshab.offlineplayer.data.db
 
 import androidx.room.*
-import java.time.Instant
 
 @Entity(tableName = "tracks", indices = [Index("uri", unique = true)])
 data class TrackEntity(
@@ -44,7 +43,7 @@ data class TrackGenreCrossRef(
 data class PlaylistEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
-    val createdAt: Long = Instant.now().toEpochMilli(),
+    val createdAt: Long = System.currentTimeMillis(),
 )
 
 @Entity(
@@ -66,5 +65,5 @@ data class PlaylistTrackCrossRef(
 data class PlayHistoryEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val trackId: Long,
-    val playedAt: Long = Instant.now().toEpochMilli(),
+    val playedAt: Long = System.currentTimeMillis(),
 )
