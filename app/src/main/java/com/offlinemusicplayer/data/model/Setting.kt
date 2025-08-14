@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class Setting(
     @PrimaryKey
     val key: String,
-    val value: String
+    val value: String,
 )
 
 object SettingKeys {

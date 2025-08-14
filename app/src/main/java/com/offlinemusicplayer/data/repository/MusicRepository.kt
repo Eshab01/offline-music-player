@@ -7,18 +7,19 @@ import com.offlinemusicplayer.data.database.MusicDao
 import com.offlinemusicplayer.data.model.Track
 import kotlinx.coroutines.flow.Flow
 
-class MusicRepository(private val musicDao: MusicDao) {
-
-    fun getAllTracksPaged(): Flow<PagingData<Track>> {
-        return Pager(
-            config = PagingConfig(
-                pageSize = 20,
-                prefetchDistance = 5,
-                enablePlaceholders = false
-            ),
-            pagingSourceFactory = { musicDao.getAllTracksPaged() }
+class MusicRepository(
+    private val musicDao: MusicDao,
+) {
+    fun getAllTracksPaged(): Flow<PagingData<Track>> =
+        Pager(
+            config =
+                PagingConfig(
+                    pageSize = 20,
+                    prefetchDistance = 5,
+                    enablePlaceholders = false,
+                ),
+            pagingSourceFactory = { musicDao.getAllTracksPaged() },
         ).flow
-    }
 
     fun getAllTracksFlow(): Flow<List<Track>> = musicDao.getAllTracksFlow()
 
@@ -40,22 +41,26 @@ class MusicRepository(private val musicDao: MusicDao) {
 
     suspend fun getTrackCount(): Int = musicDao.getTrackCount()
 
-    fun searchTracks(query: String, useFts: Boolean): Flow<PagingData<Track>> {
+    fun searchTracks(
+        query: String,
+        useFts: Boolean,
+    ): Flow<PagingData<Track>> {
         val escapedQuery = if (useFts) query else musicDao.escapeForSqlLike(query)
-        
+
         return Pager(
-            config = PagingConfig(
-                pageSize = 20,
-                prefetchDistance = 5,
-                enablePlaceholders = false
-            ),
+            config =
+                PagingConfig(
+                    pageSize = 20,
+                    prefetchDistance = 5,
+                    enablePlaceholders = false,
+                ),
             pagingSourceFactory = {
                 if (useFts) {
                     musicDao.searchTracksFts(escapedQuery)
                 } else {
                     musicDao.searchTracksLike(escapedQuery)
                 }
-            }
+            },
         ).flow
     }
 }

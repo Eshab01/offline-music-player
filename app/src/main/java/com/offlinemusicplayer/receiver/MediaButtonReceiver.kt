@@ -10,8 +10,10 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.offlinemusicplayer.service.MusicPlayerService
 
 class MediaButtonReceiver : BroadcastReceiver() {
-
-    override fun onReceive(context: Context, intent: Intent) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent,
+    ) {
         if (intent.action == Intent.ACTION_MEDIA_BUTTON) {
             val keyEvent = intent.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT)
             keyEvent?.let { event ->
@@ -22,7 +24,10 @@ class MediaButtonReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun handleMediaButton(context: Context, keyCode: Int) {
+    private fun handleMediaButton(
+        context: Context,
+        keyCode: Int,
+    ) {
         val sessionToken = SessionToken(context, android.content.ComponentName(context, MusicPlayerService::class.java))
         val controllerFuture: ListenableFuture<MediaController> =
             MediaController.Builder(context, sessionToken).buildAsync()
