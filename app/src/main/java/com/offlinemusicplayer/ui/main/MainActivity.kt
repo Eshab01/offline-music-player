@@ -39,9 +39,22 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
+            checkNotificationPermission()
             loadMusicFiles()
         } else {
             showPermissionRationale()
+        }
+    }
+
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (!isGranted) {
+            Snackbar.make(
+                binding.root,
+                "Notification permission denied. Media controls in notifications may not work.",
+                Snackbar.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -127,6 +140,7 @@ class MainActivity : AppCompatActivity() {
 
         when {
             ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED -> {
+                checkNotificationPermission()
                 loadMusicFiles()
             }
             shouldShowRequestPermissionRationale(permission) -> {
@@ -134,6 +148,15 @@ class MainActivity : AppCompatActivity() {
             }
             else -> {
                 permissionLauncher.launch(permission)
+            }
+        }
+    }
+
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) 
+                != PackageManager.PERMISSION_GRANTED) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
     }

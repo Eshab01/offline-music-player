@@ -25,6 +25,30 @@ class MusicPlayerService : MediaSessionService() {
         initializeSessionAndPlayer()
     }
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent?.action?.let { action ->
+            when (action) {
+                MediaNotificationHelper.ACTION_PLAY -> {
+                    player.play()
+                }
+                MediaNotificationHelper.ACTION_PAUSE -> {
+                    player.pause()
+                }
+                MediaNotificationHelper.ACTION_PREVIOUS -> {
+                    player.seekToPreviousMediaItem()
+                }
+                MediaNotificationHelper.ACTION_NEXT -> {
+                    player.seekToNextMediaItem()
+                }
+                MediaNotificationHelper.ACTION_STOP -> {
+                    player.stop()
+                    stopSelf()
+                }
+            }
+        }
+        return super.onStartCommand(intent, flags, startId)
+    }
+
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? {
         return mediaSession
     }

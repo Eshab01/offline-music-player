@@ -12,7 +12,6 @@ import com.offlinemusicplayer.data.model.Track
 import com.offlinemusicplayer.data.repository.MusicRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.File
 
 class MusicScanner(
     private val context: Context,
@@ -57,7 +56,6 @@ class MusicScanner(
             MediaStore.Audio.Media.SIZE,
             MediaStore.Audio.Media.DATE_ADDED,
             MediaStore.Audio.Media.DATE_MODIFIED,
-            MediaStore.Audio.Media.DATA,
             MediaStore.Audio.Media.ALBUM_ID
         )
 
@@ -81,7 +79,6 @@ class MusicScanner(
             val sizeColumn = c.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
             val dateAddedColumn = c.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED)
             val dateModifiedColumn = c.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_MODIFIED)
-            val dataColumn = c.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
             val albumIdColumn = c.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
 
             while (c.moveToNext()) {
@@ -94,7 +91,6 @@ class MusicScanner(
                     val size = c.getLong(sizeColumn)
                     val dateAdded = c.getLong(dateAddedColumn) * 1000L // Convert to milliseconds
                     val dateModified = c.getLong(dateModifiedColumn) * 1000L
-                    val dataPath = c.getString(dataColumn)
                     val albumId = c.getLong(albumIdColumn)
 
                     // Create content URI
@@ -109,9 +105,9 @@ class MusicScanner(
                         albumId
                     ).toString()
 
-                    // Get genre using MediaMetadataRetriever
+                    // Get genre using MediaMetadataRetriever with content URI
                     val genre = try {
-                        getGenreFromFile(dataPath)
+                        getGenreFromContentUri(uri)
                     } catch (e: Exception) {
                         null
                     }
@@ -144,20 +140,16 @@ class MusicScanner(
         return scanMediaStoreModern() // For simplicity, using the same implementation
     }
 
-    private fun getGenreFromFile(filePath: String): String? {
+    private fun getGenreFromContentUri(contentUri: String): String? {
         return try {
             val retriever = MediaMetadataRetriever()
-            retriever.setDataSource(filePath)
+            retriever.setDataSource(context, Uri.parse(contentUri))
             val genre = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE)
             retriever.release()
             genre
         } catch (e: Exception) {
+            Log.w(TAG, "Failed to extract genre from content URI: $contentUri", e)
             null
         }
-    }
-
-    private fun isValidAudioFile(filePath: String): Boolean {
-        val extension = File(filePath).extension.lowercase()
-        return SUPPORTED_EXTENSIONS.contains(extension)
     }
 }
