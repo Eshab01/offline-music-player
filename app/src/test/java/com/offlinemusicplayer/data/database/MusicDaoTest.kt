@@ -1,7 +1,7 @@
 package com.offlinemusicplayer.data.database
 
-import org.junit.Test
 import org.junit.Assert.*
+import org.junit.Test
 
 /**
  * Unit tests for database helper functions
@@ -26,7 +26,7 @@ class MusicDaoTest {
             override fun searchTracksFts(query: String) = TODO()
             override suspend fun getTrackCount() = TODO()
         }
-        
+
         val input = "test%query"
         val expected = "test\\%query"
         val result = dao.escapeForSqlLike(input)
@@ -51,7 +51,7 @@ class MusicDaoTest {
             override fun searchTracksFts(query: String) = TODO()
             override suspend fun getTrackCount() = TODO()
         }
-        
+
         val input = "test_query"
         val expected = "test\\_query"
         val result = dao.escapeForSqlLike(input)
@@ -76,7 +76,7 @@ class MusicDaoTest {
             override fun searchTracksFts(query: String) = TODO()
             override suspend fun getTrackCount() = TODO()
         }
-        
+
         val input = "test\\query"
         val expected = "test\\\\query"
         val result = dao.escapeForSqlLike(input)
