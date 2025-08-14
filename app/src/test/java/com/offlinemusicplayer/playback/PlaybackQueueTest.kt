@@ -6,54 +6,54 @@ import org.junit.Before
 import org.junit.Test
 
 class PlaybackQueueTest {
-
     private lateinit var playbackQueue: PlaybackQueue
     private lateinit var testTracks: List<Track>
 
     @Before
     fun setup() {
         playbackQueue = PlaybackQueue()
-        testTracks = listOf(
-            Track(
-                id = 1,
-                uri = "content://media/external/audio/media/1",
-                title = "Track 1",
-                artist = "Artist 1",
-                album = "Album 1",
-                genre = "Rock",
-                duration = 180000,
-                size = 5000000,
-                dateAdded = System.currentTimeMillis(),
-                dateModified = System.currentTimeMillis(),
-                albumArtUri = null
-            ),
-            Track(
-                id = 2,
-                uri = "content://media/external/audio/media/2",
-                title = "Track 2",
-                artist = "Artist 2",
-                album = "Album 2",
-                genre = "Pop",
-                duration = 210000,
-                size = 6000000,
-                dateAdded = System.currentTimeMillis(),
-                dateModified = System.currentTimeMillis(),
-                albumArtUri = null
-            ),
-            Track(
-                id = 3,
-                uri = "content://media/external/audio/media/3",
-                title = "Track 3",
-                artist = "Artist 3",
-                album = "Album 3",
-                genre = "Jazz",
-                duration = 240000,
-                size = 7000000,
-                dateAdded = System.currentTimeMillis(),
-                dateModified = System.currentTimeMillis(),
-                albumArtUri = null
+        testTracks =
+            listOf(
+                Track(
+                    id = 1,
+                    uri = "content://media/external/audio/media/1",
+                    title = "Track 1",
+                    artist = "Artist 1",
+                    album = "Album 1",
+                    genre = "Rock",
+                    duration = 180000,
+                    size = 5000000,
+                    dateAdded = System.currentTimeMillis(),
+                    dateModified = System.currentTimeMillis(),
+                    albumArtUri = null,
+                ),
+                Track(
+                    id = 2,
+                    uri = "content://media/external/audio/media/2",
+                    title = "Track 2",
+                    artist = "Artist 2",
+                    album = "Album 2",
+                    genre = "Pop",
+                    duration = 210000,
+                    size = 6000000,
+                    dateAdded = System.currentTimeMillis(),
+                    dateModified = System.currentTimeMillis(),
+                    albumArtUri = null,
+                ),
+                Track(
+                    id = 3,
+                    uri = "content://media/external/audio/media/3",
+                    title = "Track 3",
+                    artist = "Artist 3",
+                    album = "Album 3",
+                    genre = "Jazz",
+                    duration = 240000,
+                    size = 7000000,
+                    dateAdded = System.currentTimeMillis(),
+                    dateModified = System.currentTimeMillis(),
+                    albumArtUri = null,
+                ),
             )
-        )
     }
 
     @Test
