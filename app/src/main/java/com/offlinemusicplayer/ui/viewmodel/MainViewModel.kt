@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 
 class MainViewModel(
-    private val repository: MusicRepository
+    val repository: MusicRepository
 ) : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")

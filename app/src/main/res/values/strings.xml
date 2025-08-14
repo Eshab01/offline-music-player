@@ -69,4 +69,8 @@
     <string name="cd_repeat_button">Repeat button</string>
     <string name="cd_album_art">Album artwork</string>
     <string name="cd_more_options">More options</string>
+    <string name="cd_drag_handle">Drag to reorder</string>
+    
+    <!-- Queue -->
+    <string name="currently_playing">Currently playing</string>
 </resources>

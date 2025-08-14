@@ -22,6 +22,7 @@ import com.offlinemusicplayer.databinding.ActivityMainBinding
 import com.offlinemusicplayer.ui.about.AboutActivity
 import com.offlinemusicplayer.ui.adapter.TracksAdapter
 import com.offlinemusicplayer.ui.viewmodel.MainViewModel
+import com.offlinemusicplayer.scanner.MusicScanner
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -153,8 +154,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadMusicFiles() {
-        // TODO: Implement music file scanning
-        Snackbar.make(binding.root, "Music scanning functionality coming soon", Snackbar.LENGTH_SHORT).show()
+        // Initialize music scanner and start scanning
+        lifecycleScope.launch {
+            try {
+                val scanner = MusicScanner(this@MainActivity, viewModel.repository)
+                val count = scanner.scanMusicLibrary()
+                Snackbar.make(binding.root, "Found $count music files", Snackbar.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Snackbar.make(binding.root, "Error scanning music: ${e.message}", Snackbar.LENGTH_LONG).show()
+            }
+        }
     }
 
     private fun observeViewModel() {

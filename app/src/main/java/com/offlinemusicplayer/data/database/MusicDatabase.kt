@@ -17,6 +17,14 @@ abstract class MusicDatabase : RoomDatabase() {
     abstract fun musicDao(): MusicDao
     abstract fun settingsDao(): SettingsDao
 
+    override fun onOpen(db: SupportSQLiteDatabase) {
+        super.onOpen(db)
+        // Create FTS5 table if supported
+        if (isFts5Supported(db)) {
+            createFtsTable(db)
+        }
+    }
+
     companion object {
         // Migration objects for future version changes
         val MIGRATION_1_2 = object : Migration(1, 2) {

@@ -15,7 +15,10 @@ class MusicPlayerApplication : Application() {
             applicationContext,
             MusicDatabase::class.java,
             "music_database"
-        ).build()
+        )
+        .addMigrations(MusicDatabase.MIGRATION_1_2)
+        // Note: No fallbackToDestructiveMigration() for production safety
+        .build()
     }
 
     val repository by lazy { MusicRepository(database.musicDao()) }
