@@ -6,9 +6,10 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.offlinemusicplayer.data.model.Setting
 import com.offlinemusicplayer.data.model.Track
+import com.offlinemusicplayer.data.model.TrackFts
 
 @Database(
-    entities = [Track::class, Setting::class],
+    entities = [Track::class, Setting::class, TrackFts::class],
     version = 1,
     exportSchema = true,
 )
@@ -35,7 +36,7 @@ abstract class MusicDatabase : RoomDatabase() {
                 }
             }
 
-        // FTS5 table creation
+        // FTS5 table creation (kept for compatibility/fallback)
         fun createFtsTable(database: SupportSQLiteDatabase) {
             try {
                 // Create FTS5 virtual table if supported
@@ -46,7 +47,7 @@ abstract class MusicDatabase : RoomDatabase() {
                         content='tracks',
                         content_rowid='id'
                     )
-                """,
+                    """.trimIndent(),
                 )
 
                 // Create triggers to keep FTS table in sync
@@ -56,7 +57,7 @@ abstract class MusicDatabase : RoomDatabase() {
                         INSERT INTO tracks_fts(rowid, title, artist, album, genre, ovTitle, ovArtist, ovAlbum, ovGenre)
                         VALUES (new.id, new.title, new.artist, new.album, new.genre, new.ovTitle, new.ovArtist, new.ovAlbum, new.ovGenre);
                     END
-                """,
+                    """.trimIndent(),
                 )
 
                 database.execSQL(
@@ -65,7 +66,7 @@ abstract class MusicDatabase : RoomDatabase() {
                         INSERT INTO tracks_fts(tracks_fts, rowid, title, artist, album, genre, ovTitle, ovArtist, ovAlbum, ovGenre)
                         VALUES ('delete', old.id, old.title, old.artist, old.album, old.genre, old.ovTitle, old.ovArtist, old.ovAlbum, old.ovGenre);
                     END
-                """,
+                    """.trimIndent(),
                 )
 
                 database.execSQL(
@@ -76,7 +77,7 @@ abstract class MusicDatabase : RoomDatabase() {
                         INSERT INTO tracks_fts(rowid, title, artist, album, genre, ovTitle, ovArtist, ovAlbum, ovGenre)
                         VALUES (new.id, new.title, new.artist, new.album, new.genre, new.ovTitle, new.ovArtist, new.ovAlbum, new.ovGenre);
                     END
-                """,
+                    """.trimIndent(),
                 )
             } catch (e: Exception) {
                 // FTS5 not supported, will fall back to LIKE search

@@ -61,13 +61,12 @@ interface MusicDao {
         limit: Int = 100,
     ): PagingSource<Int, Track>
 
-    // FTS5 search (will be implemented conditionally)
+    // FTS5/FTS4 search backed by tracks_fts (virtual table).
     @Query(
         """
         SELECT tracks.* FROM tracks_fts 
         JOIN tracks ON tracks.id = tracks_fts.rowid 
-        WHERE tracks_fts MATCH :query 
-        ORDER BY rank
+        WHERE tracks_fts MATCH :query
     """,
     )
     fun searchTracksFts(query: String): PagingSource<Int, Track>
