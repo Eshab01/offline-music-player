@@ -1,7 +1,7 @@
 package com.offlinemusicplayer.playback
 
 import com.offlinemusicplayer.data.model.Track
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
