@@ -1,9 +1,9 @@
 package com.offlinemusicplayer.playback
 
 import com.offlinemusicplayer.data.model.Track
-import org.junit.Test
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Test
 
 class PlaybackQueueTest {
 
@@ -59,7 +59,7 @@ class PlaybackQueueTest {
     @Test
     fun setQueue_setsTracksAndIndex() {
         playbackQueue.setQueue(testTracks, 1)
-        
+
         assertEquals(testTracks, playbackQueue.queue.value)
         assertEquals(1, playbackQueue.currentIndex.value)
         assertEquals(testTracks[1], playbackQueue.currentTrack)
@@ -69,9 +69,9 @@ class PlaybackQueueTest {
     fun next_withNoRepeat_advancesIndex() {
         playbackQueue.setQueue(testTracks, 0)
         playbackQueue.setRepeatMode(PlaybackQueue.RepeatMode.NONE)
-        
+
         val nextTrack = playbackQueue.next()
-        
+
         assertEquals(testTracks[1], nextTrack)
         assertEquals(1, playbackQueue.currentIndex.value)
     }
@@ -80,9 +80,9 @@ class PlaybackQueueTest {
     fun next_atLastTrackWithNoRepeat_returnsNull() {
         playbackQueue.setQueue(testTracks, 2)
         playbackQueue.setRepeatMode(PlaybackQueue.RepeatMode.NONE)
-        
+
         val nextTrack = playbackQueue.next()
-        
+
         assertNull(nextTrack)
         assertEquals(2, playbackQueue.currentIndex.value)
     }
@@ -91,9 +91,9 @@ class PlaybackQueueTest {
     fun next_withRepeatAll_wrapsToBeginning() {
         playbackQueue.setQueue(testTracks, 2)
         playbackQueue.setRepeatMode(PlaybackQueue.RepeatMode.ALL)
-        
+
         val nextTrack = playbackQueue.next()
-        
+
         assertEquals(testTracks[0], nextTrack)
         assertEquals(0, playbackQueue.currentIndex.value)
     }
@@ -102,9 +102,9 @@ class PlaybackQueueTest {
     fun next_withRepeatOne_returnsSameTrack() {
         playbackQueue.setQueue(testTracks, 1)
         playbackQueue.setRepeatMode(PlaybackQueue.RepeatMode.ONE)
-        
+
         val nextTrack = playbackQueue.next()
-        
+
         assertEquals(testTracks[1], nextTrack)
         assertEquals(1, playbackQueue.currentIndex.value)
     }
@@ -112,9 +112,9 @@ class PlaybackQueueTest {
     @Test
     fun removeFromQueue_removesTrackAndUpdatesIndex() {
         playbackQueue.setQueue(testTracks, 1)
-        
+
         val removedTrack = playbackQueue.removeFromQueue(0)
-        
+
         assertEquals(testTracks[0], removedTrack)
         assertEquals(2, playbackQueue.queue.value.size)
         assertEquals(0, playbackQueue.currentIndex.value) // Index should decrease
@@ -124,9 +124,9 @@ class PlaybackQueueTest {
     @Test
     fun moveTrack_updatesQueueOrder() {
         playbackQueue.setQueue(testTracks, 1)
-        
+
         playbackQueue.moveTrack(0, 2)
-        
+
         val expectedOrder = listOf(testTracks[1], testTracks[2], testTracks[0])
         assertEquals(expectedOrder, playbackQueue.queue.value)
         assertEquals(0, playbackQueue.currentIndex.value) // Current track moved
@@ -136,9 +136,9 @@ class PlaybackQueueTest {
     fun shuffle_randomizesOrder() {
         playbackQueue.setQueue(testTracks, 0)
         val originalOrder = playbackQueue.queue.value
-        
+
         playbackQueue.setShuffleMode(true)
-        
+
         val shuffledOrder = playbackQueue.queue.value
         assertEquals(originalOrder.size, shuffledOrder.size)
         assertTrue(shuffledOrder.containsAll(originalOrder))
@@ -151,10 +151,10 @@ class PlaybackQueueTest {
         playbackQueue.setQueue(testTracks, 1)
         val originalOrder = playbackQueue.queue.value
         val originalCurrentTrack = playbackQueue.currentTrack
-        
+
         playbackQueue.setShuffleMode(true)
         playbackQueue.setShuffleMode(false)
-        
+
         assertEquals(originalOrder, playbackQueue.queue.value)
         assertEquals(originalCurrentTrack, playbackQueue.currentTrack)
     }
