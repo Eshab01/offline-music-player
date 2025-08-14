@@ -13,19 +13,25 @@ import java.util.concurrent.TimeUnit
 
 class TracksAdapter(
     private val onTrackClick: (Track) -> Unit,
-    private val onMoreClick: (Track) -> Unit
+    private val onMoreClick: (Track) -> Unit,
 ) : PagingDataAdapter<Track, TracksAdapter.TrackViewHolder>(TrackDiffCallback()) {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
-        val binding = ItemTrackBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): TrackViewHolder {
+        val binding =
+            ItemTrackBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false,
+            )
         return TrackViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: TrackViewHolder,
+        position: Int,
+    ) {
         val track = getItem(position)
         if (track != null) {
             holder.bind(track)
@@ -33,9 +39,8 @@ class TracksAdapter(
     }
 
     inner class TrackViewHolder(
-        private val binding: ItemTrackBinding
+        private val binding: ItemTrackBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
-
         init {
             binding.root.setOnClickListener {
                 val position = bindingAdapterPosition
@@ -82,12 +87,14 @@ class TracksAdapter(
     }
 
     class TrackDiffCallback : DiffUtil.ItemCallback<Track>() {
-        override fun areItemsTheSame(oldItem: Track, newItem: Track): Boolean {
-            return oldItem.id == newItem.id
-        }
+        override fun areItemsTheSame(
+            oldItem: Track,
+            newItem: Track,
+        ): Boolean = oldItem.id == newItem.id
 
-        override fun areContentsTheSame(oldItem: Track, newItem: Track): Boolean {
-            return oldItem == newItem
-        }
+        override fun areContentsTheSame(
+            oldItem: Track,
+            newItem: Track,
+        ): Boolean = oldItem == newItem
     }
 }
