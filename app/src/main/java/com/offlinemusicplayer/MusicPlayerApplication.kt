@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.os.Build
 import androidx.room.Room
 import com.offlinemusicplayer.data.database.MusicDatabase
+import com.offlinemusicplayer.data.datastore.UserPreferencesRepository
 import com.offlinemusicplayer.data.repository.MusicRepository
 
 class MusicPlayerApplication : Application() {
@@ -15,10 +16,14 @@ class MusicPlayerApplication : Application() {
                 applicationContext,
                 MusicDatabase::class.java,
                 "music_database",
-            ).build()
+            )
+            .addMigrations(MusicDatabase.MIGRATION_1_2)
+            .addCallback(MusicDatabase.FTS_CALLBACK)
+            .build()
     }
 
     val repository by lazy { MusicRepository(database.musicDao()) }
+    val userPreferencesRepository by lazy { UserPreferencesRepository(applicationContext) }
 
     override fun onCreate() {
         super.onCreate()
