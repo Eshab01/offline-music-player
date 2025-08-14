@@ -1,3 +1,5 @@
+// Kotlin DSL version — use this and delete app/build.gradle (Groovy)
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -18,7 +20,6 @@ android {
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        // Moved KSP args to the top-level `ksp {}` block below
     }
 
     buildTypes {
@@ -49,7 +50,7 @@ android {
 
     buildFeatures {
         viewBinding = true
-        buildConfig = true // Explicitly enable BuildConfig (default is true for application modules)
+        buildConfig = true
     }
 
     lint {
@@ -57,11 +58,11 @@ android {
         warningsAsErrors = false
     }
 
-    // If you use Room migration tests, expose exported schemas to androidTest assets:
+    // If you run Room migration tests, uncomment:
     // sourceSets["androidTest"].assets.srcDirs(file("$projectDir/schemas"))
 }
 
-// KSP arguments (top-level)
+// KSP arguments (top-level, not inside defaultConfig)
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
     arg("room.incremental", "true")
@@ -84,7 +85,7 @@ detekt {
 }
 
 dependencies {
-    // Detekt formatting plugin
+    // Detekt formatting ruleset
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.4")
 
     // Core Android
@@ -101,7 +102,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.6")
     implementation("androidx.lifecycle:lifecycle-service:2.8.6")
 
-    // Room + Paging (align versions)
+    // Room (align paging artifact to 2.6.1)
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     implementation("androidx.room:room-paging:2.6.1")
