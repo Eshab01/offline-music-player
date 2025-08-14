@@ -1,9 +1,15 @@
-// Kotlin DSL version — use this and delete app/build.gradle (Groovy)
+buildscript {
+    dependencies {
+        classpath("com.android.tools.build:gradle:8.1.2")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.21")
+    }
+}
+
+apply(plugin = "com.android.application")
+apply(plugin = "org.jetbrains.kotlin.android")
 
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")
+    id("com.google.devtools.ksp") version "1.8.21-1.0.11"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
     id("io.gitlab.arturbosch.detekt") version "1.23.4"
 }
