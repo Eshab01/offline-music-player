@@ -1,36 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Audio and media permissions -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
+    <!-- Storage permissions by API level -->
+    <!-- For Android 13+ -->
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- For older devices -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
-    
-    <!-- Notification permission for Android 13+ -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    
-    <!-- Network for album art (optional) -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" android:maxSdkVersion="33" />
+    <!-- Optional overlay for floating mini-player -->
+    <!-- <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> -->
 
     <application
-        android:name=".MusicPlayerApplication"
+        android:name=".App"
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:theme="@style/Theme.OfflineMusicPlayer"
-        tools:targetApi="31">
+        android:supportsRtl="true"
+        android:theme="@style/Theme.OfflineMusicPlayer">
 
         <!-- Main Activity -->
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.OfflineMusicPlayer">
             <intent-filter>
@@ -39,53 +31,15 @@
             </intent-filter>
         </activity>
 
-        <!-- About Activity -->
-        <activity
-            android:name=".ui.about.AboutActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.main.MainActivity"
-            android:theme="@style/Theme.OfflineMusicPlayer" />
-
-        <!-- Music Player Service -->
+        <!-- Media3 service -->
         <service
-            android:name=".service.MusicPlayerService"
-            android:enabled="true"
-            android:exported="false"
+            android:name=".media.MusicService"
+            android:exported="true"
             android:foregroundServiceType="mediaPlayback">
             <intent-filter>
-                <action android:name="androidx.media3.session.MediaSessionService" />
+                <action android:name="androidx.media3.session.MediaLibraryService" />
             </intent-filter>
         </service>
 
-        <!-- Media Button Receiver -->
-        <receiver
-            android:name=".receiver.MediaButtonReceiver"
-            android:exported="false">
-            <intent-filter android:priority="1000">
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
-            </intent-filter>
-        </receiver>
-
-        <!-- Audio Becoming Noisy Receiver -->
-        <receiver
-            android:name=".receiver.AudioNoisyReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
-            </intent-filter>
-        </receiver>
-
-        <!-- File provider for sharing -->
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
-
     </application>
-
 </manifest>
