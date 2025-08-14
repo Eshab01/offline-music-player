@@ -1,0 +1,11 @@
+android {
+    namespace "com.offlinemusicplayer"
+    defaultConfig {
+        applicationId "com.offlinemusicplayer"
+        // ...
+    }
+    buildFeatures {
+        buildConfig true
+    }
+    // ...
+}

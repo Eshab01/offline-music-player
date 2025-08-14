@@ -31,7 +31,7 @@ class AboutActivity : AppCompatActivity() {
     private fun setupViews() {
         binding.apply {
             versionText.text = getString(R.string.version) + " " + BuildConfig.VERSION_NAME
-            buildTypeText.text = getString(R.string.build_type) + " " + BuildConfig.BUILD_TYPE.replaceFirstChar { it.uppercase() }
+            buildTypeText.text = getString(R.string.build_type) + " " + BuildConfig.BUILD_TYPE.uppercase()
         }
     }
 
