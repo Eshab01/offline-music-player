@@ -77,4 +77,5 @@
     <!-- Additional strings -->
     <string name="permission_denied">Permission denied</string>
     <string name="notification_preparing">Preparing playback…</string>
+    <string name="app_name_fallback">Offline Music Player</string>
 </resources>
